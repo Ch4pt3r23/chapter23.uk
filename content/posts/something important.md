@@ -1,5 +1,5 @@
 ---
-title: Important
+title: something important
 date: 2026-03-10
 draft: false
 ---
