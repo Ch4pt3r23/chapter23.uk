@@ -1,0 +1,50 @@
+{{- $content := .content -}}
+{{- $matches := findRE `\[\[[^\[\]]+\]\]` $content -}}
+
+{{- range $matches }}
+  {{- $match := . -}}
+  {{- $inner := replaceRE `^\[\[|\]\]$` "" $match -}}
+  {{- $parts := split $inner "|" -}}
+  {{- $destination := trim (index $parts 0) " " -}}
+  {{- $label := $destination -}}
+
+  {{- if ge (len $parts) 2 -}}
+    {{- $label = trim (index $parts 1) " " -}}
+  {{- end -}}
+
+  {{- $target := $destination -}}
+  {{- $heading := "" -}}
+  {{- if in $destination "#" -}}
+    {{- $targetParts := split $destination "#" -}}
+    {{- $target = trim (index $targetParts 0) " " -}}
+    {{- $heading = trim (delimit (after 1 $targetParts) "#") " " -}}
+    {{- if eq $label $destination -}}
+      {{- if ne $heading "" -}}
+        {{- $label = $heading -}}
+      {{- else -}}
+        {{- $label = $target -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- $href := "" -}}
+  {{- range site.RegularPages -}}
+    {{- $base := "" -}}
+    {{- with .File -}}
+      {{- $base = .TranslationBaseName -}}
+    {{- end -}}
+    {{- if and (eq $href "") (or (eq (lower $base) (lower $target)) (eq (lower .Title) (lower $target))) -}}
+      {{- $href = .RelPermalink -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- if and $href (ne $heading "") -}}
+    {{- $href = printf "%s#%s" $href ($heading | anchorize) -}}
+  {{- end -}}
+
+  {{- if $href -}}
+    {{- $content = replace $content $match (printf `<a class="wikilink" href=%q>%s</a>` $href ($label | htmlEscape)) -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $content | safeHTML -}}

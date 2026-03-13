@@ -2,3 +2,25 @@ baseURL = "https://chapter23.uk/"
 languageCode = "en-us"
 title = "Chapter 23"
 theme = "PaperMod"
+
+[params]
+defaultTheme = "light"
+disableThemeToggle = true
+disableScrollToTop = true
+hideFooter = true
+mainSections = ["posts"]
+
+[params.profileMode]
+enabled = true
+title = "Chapter 23"
+subtitle = "A quiet place for short linked notes."
+
+[[params.profileMode.buttons]]
+name = "Read the notes"
+url = "/posts/"
+
+[[menu.main]]
+identifier = "posts"
+name = "Notes"
+url = "/posts/"
+weight = 10

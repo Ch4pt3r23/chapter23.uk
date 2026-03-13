@@ -1,0 +1,24 @@
+.post-content .wikilink,
+.entry-content .wikilink,
+.post-description .wikilink {
+    display: inline-block;
+    padding: 0.05rem 0.45rem;
+    margin: 0 0.08rem;
+    border-radius: 999px;
+    background: var(--code-bg);
+    color: var(--primary);
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.post-content .wikilink:hover,
+.entry-content .wikilink:hover,
+.post-description .wikilink:hover,
+.post-content .wikilink:focus-visible,
+.entry-content .wikilink:focus-visible,
+.post-description .wikilink:focus-visible {
+    background: var(--tertiary);
+    border-color: var(--border);
+    color: var(--primary);
+}
