@@ -1,0 +1,38 @@
+#!/bin/bash
+# Start or stop the Hugo preview server in a tmux session
+
+SESSION="hugo-preview"
+SITE_DIR="$HOME/dev/chapter23.uk"
+
+case "${1:-start}" in
+  start)
+    if [[ ! -d "$SITE_DIR" ]]; then
+      echo "Error: site directory not found: $SITE_DIR" >&2
+      exit 1
+    fi
+    if tmux has-session -t "$SESSION" 2>/dev/null; then
+      echo "Preview already running. Visit https://preview.chapter23.uk"
+      echo "Attach with: tmux attach -t $SESSION"
+    else
+      tmux new-session -d -s "$SESSION" -c "$SITE_DIR" \
+        "hugo server --bind 127.0.0.1 --baseURL https://preview.chapter23.uk --disableFastRender"
+      echo "Preview started. Visit https://preview.chapter23.uk"
+      echo "Attach with: tmux attach -t $SESSION"
+      echo "Stop with:   site-preview stop"
+    fi
+    ;;
+  stop)
+    tmux kill-session -t "$SESSION" 2>/dev/null && echo "Preview stopped." || echo "Preview was not running."
+    ;;
+  status)
+    if tmux has-session -t "$SESSION" 2>/dev/null; then
+      echo "Running. Visit https://preview.chapter23.uk"
+    else
+      echo "Not running. Start with: site-preview"
+    fi
+    ;;
+  *)
+    echo "Usage: site-preview [start|stop|status]"
+    exit 1
+    ;;
+esac
