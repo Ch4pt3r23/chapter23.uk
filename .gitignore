@@ -4,3 +4,4 @@ resources/
 .DS_Store
 content/.obsidian/
 .claude/worktrees/
+.wrangler/
