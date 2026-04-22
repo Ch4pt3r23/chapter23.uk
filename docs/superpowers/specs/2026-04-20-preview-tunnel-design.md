@@ -1,11 +1,13 @@
 # Preview Site via Cloudflare Tunnel
 
 **Date:** 2026-04-20  
-**Status:** Approved
+**Status:** Superseded by `docs/hosted-preview.md`
 
 ## Goal
 
 Expose a local `hugo server` instance at `preview.chapter23.uk` using a named cloudflared tunnel. Changes to content or layout are visible immediately at the preview URL with no deploy step. When the work is ready to publish, build with `hugo` and push to `main` — Cloudflare Pages handles the live site.
+
+This design was useful for single-machine local preview, but it is no longer the preferred setup because `preview.chapter23.uk` depends on one laptop being online. Use the hosted, password-protected Cloudflare Pages preview flow in `docs/hosted-preview.md` instead.
 
 ## Architecture
 
