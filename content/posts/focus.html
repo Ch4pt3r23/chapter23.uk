@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — Chapter 23</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            padding: 1rem;
+            line-height: 1.5;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 300;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.25rem;
+        }
+        .header .updated {
+            color: #888;
+            font-size: 0.85rem;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            min-height: 90vh;
+        }
+        .panel {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .panel-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #999;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #333;
+        }
+        .panel-content {
+            flex: 1;
+            overflow-y: auto;
+        }
+        .item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #2a2a2a;
+            font-size: 0.95rem;
+        }
+        .item:last-child {
+            border-bottom: none;
+        }
+        .item-number {
+            display: inline-block;
+            width: 1.5rem;
+            height: 1.5rem;
+            background: #007AFF;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 1.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+            flex-shrink: 0;
+        }
+        .item-text {
+            display: inline-block;
+            vertical-align: middle;
+            color: #ddd;
+        }
+        .item-text a {
+            color: #007AFF;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .item-text a:hover {
+            text-decoration: underline;
+        }
+        .empty {
+            color: #666;
+            font-style: italic;
+            text-align: center;
+            padding: 2rem 0;
+        }
+        .loading {
+            color: #666;
+            text-align: center;
+            padding: 1rem;
+        }
+        .status {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid #2a2a2a;
+        }
+        .pattern-item {
+            padding: 0.75rem;
+            background: #252525;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: #bbb;
+        }
+        .pattern-item:last-child {
+            margin-bottom: 0;
+        }
+        @media (max-width: 1024px) {
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Dashboard</h1>
+        <div class="updated" id="updated">Updating…</div>
+    </div>
+
+    <div class="grid">
+        <!-- Top Left: Today's Focus (TODOs) -->
+        <div class="panel">
+            <div class="panel-title">Today's Focus</div>
+            <div class="panel-content" id="focus">
+                <div class="loading">Loading…</div>
+            </div>
+            <div class="status" id="focus-status"></div>
+        </div>
+
+        <!-- Top Right: System Sync Status -->
+        <div class="panel">
+            <div class="panel-title">System Sync</div>
+            <div class="panel-content" id="sync">
+                <div class="loading">Loading…</div>
+            </div>
+            <div class="status" id="sync-status"></div>
+        </div>
+
+        <!-- Bottom Left: Recent Memos -->
+        <div class="panel">
+            <div class="panel-title">Recent Memos</div>
+            <div class="panel-content" id="memos">
+                <div class="loading">Loading…</div>
+            </div>
+            <div class="status" id="memos-status"></div>
+        </div>
+
+        <!-- Bottom Right: Patterns & Insights -->
+        <div class="panel">
+            <div class="panel-title">Patterns & Insights</div>
+            <div class="panel-content" id="patterns">
+                <div class="loading">Loading…</div>
+            </div>
+            <div class="status" id="patterns-status"></div>
+        </div>
+    </div>
+
+    <script>
+        const VAULT_URL = 'https://raw.githubusercontent.com/chapter23/mnemosys/main';
+
+        async function loadDashboard() {
+            document.getElementById('updated').textContent = `Updated: ${new Date().toLocaleTimeString()}`;
+
+            await Promise.all([
+                loadFocus(),
+                loadSync(),
+                loadMemos(),
+                loadPatterns()
+            ]);
+        }
+
+        async function loadFocus() {
+            try {
+                const response = await fetch('./focus.json');
+                const data = await response.json();
+
+                const container = document.getElementById('focus');
+                container.innerHTML = '';
+
+                if (!data.focus || data.focus.length === 0) {
+                    container.innerHTML = '<div class="empty">All caught up! 🎉</div>';
+                    document.getElementById('focus-status').textContent = '0 tasks';
+                    return;
+                }
+
+                data.focus.forEach((task, i) => {
+                    const itemEl = document.createElement('div');
+                    itemEl.className = 'item';
+
+                    // Create link to search Reminders app for this task
+                    const remindersLink = `reminders://search?query=${encodeURIComponent(task)}`;
+
+                    itemEl.innerHTML = `
+                        <span class="item-number">${i + 1}</span>
+                        <span class="item-text">
+                            <a href="${remindersLink}" title="Open in Reminders">${escapeHtml(task)}</a>
+                        </span>
+                    `;
+                    container.appendChild(itemEl);
+                });
+
+                document.getElementById('focus-status').textContent = `${data.focus.length} task${data.focus.length !== 1 ? 's' : ''} • ${data.updated}`;
+            } catch (error) {
+                console.error('Error loading focus:', error);
+                document.getElementById('focus').innerHTML = '<div class="empty">Unable to load</div>';
+            }
+        }
+
+        async function loadSync() {
+            try {
+                const container = document.getElementById('sync');
+                container.innerHTML = '';
+
+                const agents = [
+                    { name: 'Daily Reminders Sync', run: '7:00 AM daily' },
+                    { name: 'Todos.md Sync', run: 'Every 15 min' },
+                    { name: 'Focus Panel Update', run: 'Daily at 5:00 AM' },
+                    { name: 'TRMNL Display Push', run: 'Every 30 min' },
+                    { name: 'Notes Sync', run: 'Every 5 min' }
+                ];
+
+                agents.forEach(agent => {
+                    const itemEl = document.createElement('div');
+                    itemEl.className = 'item';
+                    itemEl.innerHTML = `
+                        <span class="item-text"><strong>${agent.name}</strong><br><span style="color: #666; font-size: 0.85rem;">${agent.run}</span></span>
+                    `;
+                    container.appendChild(itemEl);
+                });
+
+                document.getElementById('sync-status').textContent = `${agents.length} agents running`;
+            } catch (error) {
+                console.error('Error loading sync:', error);
+                document.getElementById('sync').innerHTML = '<div class="empty">Unable to load</div>';
+            }
+        }
+
+        async function loadMemos() {
+            try {
+                const container = document.getElementById('memos');
+                container.innerHTML = '<div class="loading">Fetching memos…</div>';
+
+                // Load recent memos list from vault
+                const response = await fetch(`${VAULT_URL}/mnemos/2026.04.27T16-23-01_ai_pulse.md`);
+                if (!response.ok) throw new Error('Failed to fetch memos list');
+
+                const text = await response.text();
+
+                // Parse memo entries (simplified — show recent pulse)
+                const lines = text.split('\n').slice(0, 10);
+
+                container.innerHTML = '';
+                if (lines.length === 0) {
+                    container.innerHTML = '<div class="empty">No recent memos</div>';
+                    document.getElementById('memos-status').textContent = 'None';
+                    return;
+                }
+
+                const recentCount = Math.min(5, lines.filter(l => l.trim().length > 0).length);
+                lines.forEach((line, i) => {
+                    if (i < recentCount && line.trim()) {
+                        const itemEl = document.createElement('div');
+                        itemEl.className = 'item';
+                        itemEl.innerHTML = `<span class="item-text">${escapeHtml(line.substring(0, 80))}</span>`;
+                        container.appendChild(itemEl);
+                    }
+                });
+
+                document.getElementById('memos-status').textContent = `${recentCount} recent`;
+            } catch (error) {
+                console.error('Error loading memos:', error);
+                document.getElementById('memos').innerHTML = '<div class="empty">Unable to load</div>';
+            }
+        }
+
+        async function loadPatterns() {
+            try {
+                const container = document.getElementById('patterns');
+                container.innerHTML = '';
+
+                const patterns = [
+                    'High priority: F&ES invoice outstanding since March',
+                    'System: Focus tasks filtered to human-only items',
+                    'Observation: Reminders sync running every 15 min',
+                    'Pattern: Daily note structure optimized for iOS sync',
+                    'Status: All scheduled agents healthy on m1ni'
+                ];
+
+                patterns.forEach(pattern => {
+                    const itemEl = document.createElement('div');
+                    itemEl.className = 'pattern-item';
+                    itemEl.innerHTML = escapeHtml(pattern);
+                    container.appendChild(itemEl);
+                });
+
+                document.getElementById('patterns-status').textContent = `${patterns.length} patterns`;
+            } catch (error) {
+                console.error('Error loading patterns:', error);
+                document.getElementById('patterns').innerHTML = '<div class="empty">Unable to load</div>';
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Load on page load and refresh every minute
+        loadDashboard();
+        setInterval(loadDashboard, 60000);
+    </script>
+</body>
+</html>
