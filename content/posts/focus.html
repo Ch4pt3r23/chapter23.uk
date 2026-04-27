@@ -204,8 +204,8 @@
                     const itemEl = document.createElement('div');
                     itemEl.className = 'item';
 
-                    // Create link to search Reminders app for this task
-                    const remindersLink = `reminders://search?query=${encodeURIComponent(task)}`;
+                    // Open Reminders app (no public deep-link search API exists)
+                    const remindersLink = `reminders://`;
 
                     itemEl.innerHTML = `
                         <span class="item-number">${i + 1}</span>
