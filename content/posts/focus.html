@@ -204,8 +204,8 @@
                     const itemEl = document.createElement('div');
                     itemEl.className = 'item';
 
-                    // Open Reminders app (no public deep-link search API exists)
-                    const remindersLink = `reminders://`;
+                    // Open via Shortcuts — triggers "Open Reminder" shortcut with task title as input
+                    const remindersLink = `shortcuts://run-shortcut?name=Open%20Reminder&input=text&text=${encodeURIComponent(task)}`;
 
                     itemEl.innerHTML = `
                         <span class="item-number">${i + 1}</span>
