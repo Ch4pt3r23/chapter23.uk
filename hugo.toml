@@ -3,6 +3,9 @@ languageCode = "en-uk"
 title = "Chapter 23"
 theme = "PaperMod"
 
+[pagination]
+pagerSize = 4
+
 [params]
 defaultTheme = "light"
 disableThemeToggle = true
@@ -21,6 +24,6 @@ url = "/posts/"
 
 [[menu.main]]
 identifier = "posts"
-name = "Notes"
+name = "Mnemos"
 url = "/posts/"
 weight = 10

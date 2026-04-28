@@ -1,4 +1,4 @@
 ---
-title: Notes
-description: Short linked notes collected in one place.
+title: Mnemos
+description: Four Weapons
 ---
