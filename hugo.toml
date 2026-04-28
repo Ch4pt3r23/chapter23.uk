@@ -1,5 +1,5 @@
 baseURL = "https://chapter23.uk/"
-languageCode = "en-us"
+languageCode = "en-uk"
 title = "Chapter 23"
 theme = "PaperMod"
 
@@ -13,10 +13,10 @@ mainSections = ["posts"]
 [params.profileMode]
 enabled = true
 title = "Chapter 23"
-subtitle = "A quiet place for short linked notes."
+subtitle = "an anon non prophet eristocratic dysorganisation"
 
 [[params.profileMode.buttons]]
-name = "Read the notes"
+name = "get texts"
 url = "/posts/"
 
 [[menu.main]]
