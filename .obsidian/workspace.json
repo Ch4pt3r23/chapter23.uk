@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "content/posts/disks.md",
+                "file": "content/posts/cups.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "disks"
+              "title": "cups"
             }
           }
         ]
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "content/posts/disks.md",
+                "file": "content/posts/cups.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for disks"
+              "title": "Backlinks for cups"
             }
           },
           {
@@ -182,12 +182,12 @@
       "bases:Create new base": false
     }
   },
-  "active": "f308eb0c213261ba",
+  "active": "f220fda95b1ad8a5",
   "lastOpenFiles": [
+    "content/posts/disks.md",
     "Untitled",
     "content/posts/What were you expecting?.md",
     "content/posts/something important.md",
-    "content/posts/disks.md",
     "content/posts/data.md",
     "content/posts/wands.base",
     "content/posts/_index.md",
